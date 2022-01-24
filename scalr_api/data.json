@@ -1,0 +1,16 @@
+{
+  "data": {
+    "type": "environments",
+    "attributes": {
+      "name": "staging"
+    },
+    "relationships": {
+      "account": {
+        "data": {
+          "id": "acc-foobar",
+          "type": "accounts"
+        }
+      }
+    }
+  }
+}
