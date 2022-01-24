@@ -1,0 +1,39 @@
+
+
+#Regarding Vault as it happens Ryan was looking at this recently. 
+#This would all be done in Terraform using the Vault provider to pull keys/tokens from vault and then pass them to the Google provider. This example shows how it is done for AWS but the principle is the same for Google.
+
+terraform {
+  backend "remote" {
+    hostname = "my.scalr.com"
+    organization = "your-org"
+
+    workspaces {
+      name = "your-workspace"
+    }
+  }
+}
+
+provider "vault" {
+ address = "var.address"
+ token = "var.token"
+}
+
+data "vault_aws_access_credentials" "creds" {
+  backend = "aws"
+  role    = "my-role"
+}
+
+provider "aws" {
+  access_key = data.vault_aws_access_credentials.creds.access_key
+  secret_key = data.vault_aws_access_credentials.creds.secret_key
+  region  = "us-east-1"
+}
+
+resource "aws_instance" "scalr" {
+  ami                    = "ami-2757f631"
+  instance_type          = "t2.nano"
+  subnet_id              = "subnet-0ebb1058ad727cfdb"
+  vpc_security_group_ids = ["sg-0880cfdc546b123ba"]
+  key_name               = "key"
+}
